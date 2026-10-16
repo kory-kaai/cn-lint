@@ -14,13 +14,13 @@ button.tsx:1:19  Class 'inline' is unused when 'line-clamp-1' is applied. 'line-
 `line-clamp-1` sets `display` and `overflow`, so `tailwind-merge` drops the earlier classes. `cn-lint` runs the same merge and reports the class that lost, with the class that won.
 
 ```bash
-npx cn-lint
+npm install -D github:kory-kaai/cn-lint
 ```
 
 ## Install
 
 ```bash
-npm install -D cn-lint
+npm install -D github:kory-kaai/cn-lint
 ```
 
 Check a project from the command line, or fail CI:
