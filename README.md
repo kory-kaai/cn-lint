@@ -1,37 +1,71 @@
-# cn-lint
+<p align="center">
+  <a href="https://github.com/kory-kaai/cn-lint/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/kory-kaai/cn-lint/ci.yml?branch=main&style=flat-square&label=tests&color=f97316&labelColor=0c0a09" /></a>
+  <a href="https://github.com/kory-kaai/cn-lint/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/kory-kaai/cn-lint?style=flat-square&label=stars&color=f97316&labelColor=0c0a09" /></a>
+  <a href="./LICENSE"><img alt="MIT license" src="https://img.shields.io/github/license/kory-kaai/cn-lint?style=flat-square&color=f97316&labelColor=0c0a09" /></a>
+  <img alt="Node 20 or newer" src="https://img.shields.io/badge/node-%E2%89%A520-f97316?style=flat-square&labelColor=0c0a09&logo=nodedotjs&logoColor=white" />
+  <img alt="Follows tailwind-merge" src="https://img.shields.io/badge/tailwind--merge-same%20rules-f97316?style=flat-square&labelColor=0c0a09&logo=tailwindcss&logoColor=white" />
+</p>
 
-`cn('overflow-auto inline line-clamp-1')` renders as `line-clamp-1`. The other two classes are deleted, and nothing in the browser tells you.
+<h1 align="center">cn-lint</h1>
 
-```tsx
-cn('overflow-auto inline', active && 'line-clamp-1')
-```
+<p align="center">
+  <strong>The class that lost. The class that won.</strong><br />
+  <code>cn()</code> and <code>twMerge()</code> delete Tailwind classes and leave no trace.<br />
+  cn-lint runs that same merge and names both sides.
+</p>
+
+<p align="center">
+  <img alt="overflow-auto is dropped" src="https://img.shields.io/badge/overflow--auto-dropped-9f1239?style=for-the-badge&labelColor=0c0a09" />
+  <img alt="inline is dropped" src="https://img.shields.io/badge/inline-dropped-9f1239?style=for-the-badge&labelColor=0c0a09" />
+  <img alt="line-clamp-1 is kept" src="https://img.shields.io/badge/line--clamp--1-kept-047857?style=for-the-badge&labelColor=0c0a09" />
+</p>
+
+<p align="center">
+  <code>cn('overflow-auto inline', active && 'line-clamp-1')</code>
+</p>
+
+`line-clamp-1` sets `display` and `overflow`. The earlier classes never reach the DOM.
 
 ```text
-button.tsx:1:5  Class 'overflow-auto' is unused when 'line-clamp-1' is applied. 'line-clamp-1' overrides it.
+button.tsx:1:5   Class 'overflow-auto' is unused when 'line-clamp-1' is applied. 'line-clamp-1' overrides it.
 button.tsx:1:19  Class 'inline' is unused when 'line-clamp-1' is applied. 'line-clamp-1' overrides it.
 ```
 
-`line-clamp-1` sets `display` and `overflow`, so `tailwind-merge` drops the earlier classes. `cn-lint` runs the same merge and reports the class that lost, with the class that won.
+<p align="center">
+  <a href="#install"><img alt="Install" src="https://img.shields.io/badge/install-github%3Akory--kaai%2Fcn--lint-0c0a09?style=for-the-badge&labelColor=f97316" /></a>
+</p>
 
-```bash
-npm install -D github:kory-kaai/cn-lint
-```
+---
 
 ## Install
 
 ```bash
 npm install -D github:kory-kaai/cn-lint
-```
-
-Check a project from the command line, or fail CI:
-
-```bash
 npx cn-lint src
 ```
 
-The process exits `1` when a call drops a class.
+The process exits `1` when a call drops a class, so the same command can fail CI.
 
-## ESLint
+<table>
+  <tr>
+    <td width="50%" valign="top">
+
+### Command line
+
+Walks the project, skips `node_modules`, `dist`, and `.git`, and prints `file:line:column`.
+
+```bash
+npx cn-lint
+npx cn-lint src components
+npx cn-lint --functions cn,twMerge,cx
+```
+
+`cn` and `twMerge` are checked by default. `cx` is not, because it is often `clsx` with no merge.
+
+    </td>
+    <td width="50%" valign="top">
+
+### ESLint
 
 ```js
 import cnLint from 'cn-lint/eslint'
@@ -39,7 +73,7 @@ import cnLint from 'cn-lint/eslint'
 export default [cnLint.configs.recommended]
 ```
 
-The rule is `cn-lint/no-conflicting-classes`. It checks `cn()` and `twMerge()`. Pass `functions` when a project uses another name:
+The rule is `cn-lint/no-conflicting-classes`. Another function name is an option:
 
 ```js
 {
@@ -49,25 +83,37 @@ The rule is `cn-lint/no-conflicting-classes`. It checks `cn()` and `twMerge()`. 
 }
 ```
 
-## What it reports
+    </td>
+  </tr>
+</table>
 
-A class is reported when it is always present and a later class removes it:
+---
+
+## The report
+
+| You wrote | What happens |
+| --- | --- |
+| `cn('px-2 pt-1 p-4')` | `px-2` and `pt-1` lose. `p-4` wins. |
+| `cn('p-4 px-2')` | Both stay. A later `px` does not override `p`. |
+| `cn('overflow-auto', active && 'line-clamp-1')` | Reported only for the case where `line-clamp-1` is applied. |
+| `cn('m-1', flag ? 'px-2' : 'p-4')` | Quiet. The two branches never apply together. |
+| `cn('hover:p-4', 'p-2')` | Quiet. A variant does not fight the unprefixed class. |
+| `` cn(`p-${size} px-2`) `` | Skipped. The class name is built at runtime. |
+
+`clsx()`, `classnames()`, and `twJoin()` are read through, so a conflict inside them is still caught:
 
 ```tsx
-cn('px-2 pt-1 p-4')
-// px-2 and pt-1 are unused. p-4 overrides them.
+twMerge(clsx('overflow-auto', 'line-clamp-1'))
 ```
 
-It is also reported when one optional class is what removes it:
+An object key is required when its value is `true`, and ignored when it is `false`. A variable makes that key optional, and two optional keys are not compared with each other.
 
-```tsx
-cn('overflow-auto', active && 'line-clamp-1')
-```
+---
 
-Two optional classes are not compared with each other. `flag ? 'px-2' : 'p-4'` is two separate cases, so those branches are not a conflict. `hover:` and `md:` stay independent of the unprefixed class, because that is how `tailwind-merge` works.
-
-Arguments to `clsx()`, `classnames()`, and `twJoin()` are read through. A template that builds a class, such as `` `p-${size}` ``, is skipped.
-
-## License
-
-MIT
+<p align="center">
+  <a href="https://github.com/kory-kaai/cn-lint/releases/tag/v0.1.0">v0.1.0</a>
+  &nbsp;·&nbsp;
+  <a href="./LICENSE">MIT</a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/kory-kaai">Kory Kaai</a>
+</p>
