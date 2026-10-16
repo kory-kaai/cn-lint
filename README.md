@@ -1,7 +1,7 @@
 <p align="center">
   <a href="https://github.com/kory-kaai/cn-lint/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/kory-kaai/cn-lint/ci.yml?branch=main&style=flat-square&label=tests&color=f97316&labelColor=0c0a09" /></a>
   <a href="https://github.com/kory-kaai/cn-lint/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/kory-kaai/cn-lint?style=flat-square&label=stars&color=f97316&labelColor=0c0a09" /></a>
-  <a href="./LICENSE"><img alt="MIT license" src="https://img.shields.io/github/license/kory-kaai/cn-lint?style=flat-square&color=f97316&labelColor=0c0a09" /></a>
+  <a href="./LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-f97316?style=flat-square&labelColor=0c0a09" /></a>
   <img alt="Node 20 or newer" src="https://img.shields.io/badge/node-%E2%89%A520-f97316?style=flat-square&labelColor=0c0a09&logo=nodedotjs&logoColor=white" />
   <img alt="Follows tailwind-merge" src="https://img.shields.io/badge/tailwind--merge-same%20rules-f97316?style=flat-square&labelColor=0c0a09&logo=tailwindcss&logoColor=white" />
 </p>
@@ -26,14 +26,9 @@
 
 `line-clamp-1` sets `display` and `overflow`. The earlier classes never reach the DOM.
 
-```text
-button.tsx:1:5   Class 'overflow-auto' is unused when 'line-clamp-1' is applied. 'line-clamp-1' overrides it.
-button.tsx:1:19  Class 'inline' is unused when 'line-clamp-1' is applied. 'line-clamp-1' overrides it.
-```
-
-<p align="center">
-  <a href="#install"><img alt="Install" src="https://img.shields.io/badge/install-github%3Akory--kaai%2Fcn--lint-0c0a09?style=for-the-badge&labelColor=f97316" /></a>
-</p>
+> `button.tsx:1:5` Class `overflow-auto` is unused when `line-clamp-1` is applied. `line-clamp-1` overrides it.
+>
+> `button.tsx:1:19` Class `inline` is unused when `line-clamp-1` is applied. `line-clamp-1` overrides it.
 
 ---
 
@@ -46,10 +41,6 @@ npx cn-lint src
 
 The process exits `1` when a call drops a class, so the same command can fail CI.
 
-<table>
-  <tr>
-    <td width="50%" valign="top">
-
 ### Command line
 
 Walks the project, skips `node_modules`, `dist`, and `.git`, and prints `file:line:column`.
@@ -61,9 +52,6 @@ npx cn-lint --functions cn,twMerge,cx
 ```
 
 `cn` and `twMerge` are checked by default. `cx` is not, because it is often `clsx` with no merge.
-
-    </td>
-    <td width="50%" valign="top">
 
 ### ESLint
 
@@ -82,10 +70,6 @@ The rule is `cn-lint/no-conflicting-classes`. Another function name is an option
   },
 }
 ```
-
-    </td>
-  </tr>
-</table>
 
 ---
 
