@@ -1,0 +1,60 @@
+{
+  "name": "cn-lint",
+  "version": "0.1.0",
+  "description": "Report Tailwind classes that cn() and twMerge() silently drop.",
+  "keywords": [
+    "tailwindcss",
+    "tailwind-merge",
+    "cn",
+    "clsx",
+    "eslint",
+    "lint"
+  ],
+  "license": "MIT",
+  "author": "Kory Kaai",
+  "type": "module",
+  "bin": {
+    "cn-lint": "./dist/cli.js"
+  },
+  "exports": {
+    ".": "./dist/lint.js",
+    "./eslint": "./dist/eslint.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kory-kaai/cn-lint.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kory-kaai/cn-lint/issues"
+  },
+  "homepage": "https://github.com/kory-kaai/cn-lint#readme",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --experimental-strip-types --test test/lint.test.ts",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run build"
+  },
+  "dependencies": {
+    "tailwind-merge": "^3.3.1",
+    "typescript": "^5.9.2"
+  },
+  "peerDependencies": {
+    "eslint": ">=8"
+  },
+  "peerDependenciesMeta": {
+    "eslint": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5"
+  }
+}
